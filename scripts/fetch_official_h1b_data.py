@@ -14,35 +14,38 @@ from concurrent.futures import ThreadPoolExecutor
 
 from openpyxl import load_workbook
 
-DOL_LCA_XLSX_URL_TEMPLATE = "https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY{fy}_Q{quarter}.xlsx"
+DOL_LCA_XLSX_URL_TEMPLATES = [
+    "https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY{fy}_Q{quarter}.xlsx",
+    "https://www.dol.gov/media/LCA_Disclosure_Data_FY{fy}_Q{quarter}.xlsx",
+]
+
+
+def _try_download(url: str, target: pathlib.Path) -> bool | None:
+    """Try to download url to target. Returns True on success, False on 404/403, None on other error."""
+    result = subprocess.run(
+        ["curl", "-L", "--fail", "-s", "-w", "%{http_code}", url, "-o", str(target)],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        return True
+    if target.exists():
+        target.unlink()
+    http_code = result.stdout.strip()
+    if http_code in ("404", "403", ""):
+        return False
+    return None  # unexpected error
 
 
 def download_file(url: str, target: pathlib.Path) -> bool:
     """Download url to target. Returns True on success, False if the file does not exist (404)."""
     target.parent.mkdir(parents=True, exist_ok=True)
-    result = subprocess.run(
-        [
-            "curl",
-            "-L",
-            "--fail",
-            "-s",
-            "-w",
-            "%{http_code}",
-            url,
-            "-o",
-            str(target),
-        ],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        if target.exists():
-            target.unlink()
-        http_code = result.stdout.strip()
-        if http_code in ("404", "403", ""):
-            return False
-        raise RuntimeError(f"Failed to download {url} (HTTP {http_code})")
-    return True
+    result = _try_download(url, target)
+    if result is True:
+        return True
+    if result is False:
+        return False
+    raise RuntimeError(f"Failed to download {url}")
 
 
 def as_text(value) -> str:
@@ -355,28 +358,38 @@ def main() -> None:
                              effective_end_fy, effective_end_quarter)
     )
 
-    quarter_jobs: list[tuple[int, int, pathlib.Path, str]] = []
+    quarter_jobs: list[tuple[int, int, pathlib.Path, list[str]]] = []
     for fy, quarter in fiscal_quarters:
         filename = f"LCA_Disclosure_Data_FY{fy}_Q{quarter}.xlsx"
-        quarter_url = DOL_LCA_XLSX_URL_TEMPLATE.format(fy=fy, quarter=quarter)
         quarter_xlsx = source_dir / filename
-        quarter_jobs.append((fy, quarter, quarter_xlsx, quarter_url))
+        urls = [t.format(fy=fy, quarter=quarter) for t in DOL_LCA_XLSX_URL_TEMPLATES]
+        quarter_jobs.append((fy, quarter, quarter_xlsx, urls))
+
+    def download_with_fallback(quarter_xlsx: pathlib.Path, urls: list[str]) -> bool:
+        quarter_xlsx.parent.mkdir(parents=True, exist_ok=True)
+        for url in urls:
+            result = _try_download(url, quarter_xlsx)
+            if result is True:
+                return True
+            if result is None:
+                raise RuntimeError(f"Failed to download {url}")
+        return False
 
     print(
         f"Downloading {len(quarter_jobs)} DOL quarter files with parallel downloads={args.parallel_downloads}...")
     with ThreadPoolExecutor(max_workers=args.parallel_downloads) as executor:
         futures = {
-            executor.submit(download_file, quarter_url, quarter_xlsx): (fy, quarter, quarter_xlsx, quarter_url)
-            for fy, quarter, quarter_xlsx, quarter_url in quarter_jobs
+            executor.submit(download_with_fallback, quarter_xlsx, urls): (fy, quarter, quarter_xlsx, urls)
+            for fy, quarter, quarter_xlsx, urls in quarter_jobs
         }
         available_jobs: list[tuple[int, int, pathlib.Path, str]] = []
         for future, job in futures.items():
-            fy, quarter, quarter_xlsx, quarter_url = job
+            fy, quarter, quarter_xlsx, urls = job
             if future.result():
-                available_jobs.append(job)
+                available_jobs.append((fy, quarter, quarter_xlsx, urls[0]))
             else:
                 print(
-                    f"[skip] FY{fy} Q{quarter} not yet published on DOL ({quarter_url})")
+                    f"[skip] FY{fy} Q{quarter} not yet published on DOL (tried: {', '.join(urls)})")
 
     if not available_jobs:
         print("No new DOL quarterly files are available yet. Already up to date.")
