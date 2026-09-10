@@ -17,6 +17,7 @@ from openpyxl import load_workbook
 DOL_LCA_XLSX_URL_TEMPLATES = [
     "https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY{fy}_Q{quarter}.xlsx",
     "https://www.dol.gov/media/LCA_Disclosure_Data_FY{fy}_Q{quarter}.xlsx",
+    "https://www.dol.gov/media/LCA_Dislclosure_Data_FY{fy}_Q{quarter}.xlsx",
 ]
 
 
