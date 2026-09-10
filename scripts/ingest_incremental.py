@@ -109,7 +109,12 @@ def main():
             s3.download_file(bucket, base_s3_key, str(existing_path))
             existing_table = pq.read_table(existing_path)
             print(f"Existing: {existing_table.num_rows:,} rows")
-            merged = pa.concat_tables([existing_table, new_table], promote_options="default")
+            new_cols = {f.name: f.type for f in new_table.schema}
+            for field in existing_table.schema:
+                if field.name in new_cols and new_cols[field.name] != field.type:
+                    idx = new_table.schema.get_field_index(field.name)
+                    new_table = new_table.set_column(idx, field.name, new_table.column(field.name).cast(field.type))
+            merged = pa.concat_tables([existing_table, new_table])
         else:
             merged = new_table
 
