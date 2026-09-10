@@ -79,9 +79,59 @@ The pipeline writes to `data/`:
 
 ## Official Data Sources
 
-- DOL LCA disclosure quarterly XLSX:
-  `https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY{FY}_Q{Q}.xlsx`  
-  e.g. [LCA_Disclosure_Data_FY2026_Q1.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2026_Q1.xlsx)
+DOL publishes quarterly LCA disclosure XLSX files. The pipeline tries three URL templates in order (first success wins):
+
+1. `https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY{FY}_Q{Q}.xlsx`
+2. `https://www.dol.gov/media/LCA_Disclosure_Data_FY{FY}_Q{Q}.xlsx`
+3. `https://www.dol.gov/media/LCA_Dislclosure_Data_FY{FY}_Q{Q}.xlsx` ← typo variant (DOL published Q2 at this misspelled URL)
+
+### Source XLSX by quarter
+
+| Quarter | DOL URL |
+|---------|---------|
+| FY2020 Q1 | [LCA_Disclosure_Data_FY2020_Q1.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2020_Q1.xlsx) |
+| FY2020 Q2 | [LCA_Disclosure_Data_FY2020_Q2.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2020_Q2.xlsx) |
+| FY2020 Q3 | [LCA_Disclosure_Data_FY2020_Q3.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2020_Q3.xlsx) |
+| FY2020 Q4 | [LCA_Disclosure_Data_FY2020_Q4.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2020_Q4.xlsx) |
+| FY2021 Q1 | [LCA_Disclosure_Data_FY2021_Q1.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2021_Q1.xlsx) |
+| FY2021 Q2 | [LCA_Disclosure_Data_FY2021_Q2.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2021_Q2.xlsx) |
+| FY2021 Q3 | [LCA_Disclosure_Data_FY2021_Q3.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2021_Q3.xlsx) |
+| FY2021 Q4 | [LCA_Disclosure_Data_FY2021_Q4.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2021_Q4.xlsx) |
+| FY2022 Q1 | [LCA_Disclosure_Data_FY2022_Q1.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2022_Q1.xlsx) |
+| FY2022 Q2 | [LCA_Disclosure_Data_FY2022_Q2.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2022_Q2.xlsx) |
+| FY2022 Q3 | [LCA_Disclosure_Data_FY2022_Q3.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2022_Q3.xlsx) |
+| FY2022 Q4 | [LCA_Disclosure_Data_FY2022_Q4.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2022_Q4.xlsx) |
+| FY2023 Q1 | [LCA_Disclosure_Data_FY2023_Q1.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2023_Q1.xlsx) |
+| FY2023 Q2 | [LCA_Disclosure_Data_FY2023_Q2.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2023_Q2.xlsx) |
+| FY2023 Q3 | [LCA_Disclosure_Data_FY2023_Q3.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2023_Q3.xlsx) |
+| FY2023 Q4 | [LCA_Disclosure_Data_FY2023_Q4.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2023_Q4.xlsx) |
+| FY2024 Q1 | [LCA_Disclosure_Data_FY2024_Q1.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2024_Q1.xlsx) |
+| FY2024 Q2 | [LCA_Disclosure_Data_FY2024_Q2.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2024_Q2.xlsx) |
+| FY2024 Q3 | [LCA_Disclosure_Data_FY2024_Q3.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2024_Q3.xlsx) |
+| FY2024 Q4 | [LCA_Disclosure_Data_FY2024_Q4.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2024_Q4.xlsx) |
+| FY2025 Q1 | [LCA_Disclosure_Data_FY2025_Q1.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2025_Q1.xlsx) |
+| FY2025 Q2 | [LCA_Disclosure_Data_FY2025_Q2.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2025_Q2.xlsx) |
+| FY2025 Q3 | [LCA_Disclosure_Data_FY2025_Q3.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2025_Q3.xlsx) |
+| FY2025 Q4 | [LCA_Disclosure_Data_FY2025_Q4.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2025_Q4.xlsx) |
+| FY2026 Q1 | [LCA_Disclosure_Data_FY2026_Q1.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2026_Q1.xlsx) |
+| FY2026 Q2 | [LCA_Dislclosure_Data_FY2026_Q2.xlsx](https://www.dol.gov/media/LCA_Dislclosure_Data_FY2026_Q2.xlsx) ← DOL typo in filename |
+
+> The pipeline's `download_with_fallback()` tries all three URL templates automatically, so no manual intervention is needed when DOL changes their URL structure.
+
+## S3 / Parquet Endpoints
+
+After running `npm run infra:up`, the bucket name is written to `.infra/state.env`. Endpoints follow this pattern (substitute `{BUCKET}` and `{REGION}`):
+
+| File | URL |
+|------|-----|
+| Single parquet (all years) | `https://{BUCKET}.s3.{REGION}.amazonaws.com/data/parquet/dol_lca_h1b_combined.parquet` |
+| Year-partitioned parquet | `https://{BUCKET}.s3.{REGION}.amazonaws.com/data/parquet/dol_lca_h1b_combined_partitioned/year={YEAR}/part-*.parquet` |
+
+To read the bucket name from the last deploy:
+
+```bash
+cat /path/to/parse-lca-files-to-parquet/.infra/state.env
+```
 
 ## Parallel Fetch/Normalize Tuning
 
