@@ -47,7 +47,7 @@ _find_cred() {
     done < <(find "$dir" -maxdepth 3 -name ".env" -print0 2>/dev/null)
   done
 
-  printf ''
+  true
 }
 
 _mask() { local v="$1"; [[ -z "$v" ]] && echo "(not set)" || echo "${v:0:8}...${v: -4}"; }
@@ -56,7 +56,7 @@ _prompt_cred() {
   local label="$1" current="$2"
   local ans val
   if [[ -n "$current" ]]; then
-    printf '  %-24s  %s  — use this? [Y/n]: ' "$label" "$(_mask "$current")" >&2
+    printf '  %-24s  %s  - use this? [Y/n]: ' "$label" "$(_mask "$current")" >&2
     read -r ans; ans="${ans:-Y}"
     if [[ "$ans" =~ ^[Yy] ]]; then
       printf '%s' "$current"
@@ -65,15 +65,15 @@ _prompt_cred() {
       printf '%s' "$val"
     fi
   else
-    printf '  %-24s  (not found) — enter value: ' "$label" >&2
+    printf '  %-24s  (not found) - enter value: ' "$label" >&2
     read -rs val; printf '\n' >&2
     printf '%s' "$val"
   fi
 }
 
 # ── gather credentials ────────────────────────────────────────────────────────
-printf '--- AWS / GitHub Secrets setup ---\n'
-printf 'Scanning for existing credentials (env, aws configure, .env files)...\n\n'
+printf '%s\n' '=== AWS / GitHub Secrets setup ==='
+printf '%s\n\n' 'Scanning for existing credentials (env, aws configure, .env files)...'
 
 FOUND_KEY_ID=$(_find_cred AWS_ACCESS_KEY_ID)
 FOUND_SECRET=$(_find_cred AWS_SECRET_ACCESS_KEY)
@@ -97,7 +97,7 @@ printf '\n'
 }
 
 # ── push secrets to GitHub ────────────────────────────────────────────────────
-printf '--- Pushing secrets to GitHub repo (%s) ---\n' "$REPO"
+printf '=== Pushing secrets to GitHub repo: %s ===\n' "$REPO"
 printf '%s' "$AWS_ACCESS_KEY_ID"     | gh secret set AWS_ACCESS_KEY_ID     --repo "$REPO"
 printf '%s' "$AWS_SECRET_ACCESS_KEY" | gh secret set AWS_SECRET_ACCESS_KEY --repo "$REPO"
 printf '%s' "$AWS_REGION"            | gh secret set AWS_REGION            --repo "$REPO"
@@ -105,8 +105,8 @@ printf '%s' "$S3_BUCKET"             | gh secret set S3_BUCKET             --rep
 printf 'Secrets set.\n\n'
 
 # ── trigger workflow ──────────────────────────────────────────────────────────
-printf '--- Triggering GitHub Actions workflow ---\n'
-printf 'All heavy processing runs on the GitHub runner — this machine is not involved.\n\n'
+printf '%s\n' '=== Triggering GitHub Actions workflow ==='
+printf '%s\n\n' 'All heavy processing runs on the GitHub runner - this machine is not involved.'
 
 gh workflow run "$WORKFLOW" --repo "$REPO"
 
