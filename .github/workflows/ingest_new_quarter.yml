@@ -1,0 +1,40 @@
+name: Ingest new DOL quarter
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 20 1,4,7,10 *'
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install openpyxl pyarrow boto3
+
+      - name: Ingest new quarter(s)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        run: python3 scripts/ingest_incremental.py
+
+      - name: Commit updated manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/manifest.json
+          if ! git diff --cached --quiet; then
+            LAST_Q=$(python3 -c "import json; m=json.load(open('data/manifest.json')); print(f\"FY{m['last_fy']} Q{m['last_quarter']}\")")
+            git commit -m "chore: ingest DOL LCA through $LAST_Q [skip ci]"
+            git push
+          fi

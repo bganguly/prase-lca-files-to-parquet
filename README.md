@@ -134,6 +134,33 @@ To read the bucket name from the last deploy:
 cat /path/to/parse-lca-files-to-parquet/.infra/state.env
 ```
 
+## Automated Ingest (GitHub Actions)
+
+New quarters are ingested by a GitHub Actions workflow — no local processing needed after initial bucket setup.
+
+```bash
+bash scripts/deploy.sh
+```
+
+This triggers `.github/workflows/ingest_new_quarter.yml` which:
+1. Checks DOL for quarters not yet in S3
+2. Downloads and normalizes only the new XLSX(es)
+3. Downloads the existing combined parquet from S3, merges, re-uploads
+4. Commits the updated `manifest.json` back to the repo
+
+Also runs on a schedule (20th of Jan/Apr/Jul/Oct).
+
+**Required GitHub repository secrets:**
+
+| Secret | Value |
+|--------|-------|
+| `AWS_ACCESS_KEY_ID` | IAM key with `s3:GetObject`, `s3:PutObject` on the bucket |
+| `AWS_SECRET_ACCESS_KEY` | Corresponding secret |
+| `AWS_REGION` | e.g. `us-east-1` |
+| `S3_BUCKET` | `h1b-nlq-parquet-577479071532-20260511` |
+
+> First-time bucket creation still uses `npm run infra:up` locally. After that, all data updates go through `deploy.sh` → GitHub Actions.
+
 ## Parallel Fetch/Normalize Tuning
 
 ```bash
