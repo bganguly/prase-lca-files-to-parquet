@@ -115,6 +115,7 @@ DOL publishes quarterly LCA disclosure XLSX files. The pipeline tries three URL 
 | FY2025 Q4 | [LCA_Disclosure_Data_FY2025_Q4.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2025_Q4.xlsx) |
 | FY2026 Q1 | [LCA_Disclosure_Data_FY2026_Q1.xlsx](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/LCA_Disclosure_Data_FY2026_Q1.xlsx) |
 | FY2026 Q2 | [LCA_Dislclosure_Data_FY2026_Q2.xlsx](https://www.dol.gov/media/LCA_Dislclosure_Data_FY2026_Q2.xlsx) ← DOL typo in filename |
+| FY2026 Q3 | [LCA_Disclosure_Data_FY2026_Q3.xlsx](https://www.dol.gov/media/LCA_Disclosure_Data_FY2026_Q3.xlsx) |
 
 > The pipeline's `download_with_fallback()` tries all three URL templates automatically, so no manual intervention is needed when DOL changes their URL structure.
 
